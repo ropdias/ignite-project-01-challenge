@@ -11,7 +11,7 @@ export const routes = [
     handler: (req, res) => {
       const { title, description } = req.body;
 
-      dateNow = Date.now();
+      const dateNow = Date.now();
 
       const task = {
         id: randomUUID(),
@@ -97,7 +97,7 @@ export const routes = [
       if (rowIndex > -1) {
         taskToUpdate = tasks[rowIndex];
 
-        dateNow = Date.now();
+        const dateNow = Date.now();
 
         taskToUpdate = {
           ...taskToUpdate,
