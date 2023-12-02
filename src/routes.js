@@ -9,7 +9,25 @@ export const routes = [
     method: 'POST',
     path: buildRoutePath('/tasks'),
     handler: (req, res) => {
+      if (!req.body) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.writeHead(404).end(
+          JSON.stringify({
+            error: 'body must be a valid JSON',
+          })
+        );
+      }
+
       const { title, description } = req.body;
+
+      if (!title || !description) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.writeHead(404).end(
+          JSON.stringify({
+            error: 'title e description must exist',
+          })
+        );
+      }
 
       const dateNow = Date.now();
 
@@ -19,7 +37,7 @@ export const routes = [
         description,
         completed_at: null,
         created_at: dateNow,
-        updated_at: dateNow,
+        updated_at: null,
       };
 
       database.insert('tasks', task);
@@ -41,16 +59,35 @@ export const routes = [
     path: buildRoutePath('/tasks/:id'),
     handler: (req, res) => {
       const { id } = req.params;
+
+      if (!req.body) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.writeHead(404).end(
+          JSON.stringify({
+            error: 'body must be a valid JSON',
+          })
+        );
+      }
+
       const { title, description } = req.body;
+
+      if (!title || !description) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.writeHead(404).end(
+          JSON.stringify({
+            error: 'title e description must exist',
+          })
+        );
+      }
 
       const tasks = database.select('tasks');
 
       const rowIndex = tasks.findIndex((row) => row.id === id);
 
       if (rowIndex > -1) {
-        taskToUpdate = tasks[rowIndex];
+        let taskToUpdate = tasks[rowIndex];
 
-        dateNow = Date.now();
+        const dateNow = Date.now();
 
         taskToUpdate = {
           ...taskToUpdate,
@@ -62,7 +99,10 @@ export const routes = [
         database.update('tasks', id, taskToUpdate);
         return res.writeHead(204).end();
       } else {
-        return res.writeHead(404).end();
+        res.setHeader('Content-Type', 'application/json');
+        return res
+          .writeHead(404)
+          .end(JSON.stringify({ error: 'id is not valid' }));
       }
     },
   },
@@ -80,7 +120,10 @@ export const routes = [
         database.delete('tasks', id);
         return res.writeHead(204).end();
       } else {
-        return res.writeHead(404).end();
+        res.setHeader('Content-Type', 'application/json');
+        return res
+          .writeHead(404)
+          .end(JSON.stringify({ error: 'id is not valid' }));
       }
     },
   },
@@ -95,7 +138,7 @@ export const routes = [
       const rowIndex = tasks.findIndex((row) => row.id === id);
 
       if (rowIndex > -1) {
-        taskToUpdate = tasks[rowIndex];
+        let taskToUpdate = tasks[rowIndex];
 
         const dateNow = Date.now();
 
@@ -107,7 +150,10 @@ export const routes = [
         database.update('tasks', id, taskToUpdate);
         return res.writeHead(204).end();
       } else {
-        return res.writeHead(404).end();
+        res.setHeader('Content-Type', 'application/json');
+        return res
+          .writeHead(404)
+          .end(JSON.stringify({ error: 'id is not valid' }));
       }
     },
   },
