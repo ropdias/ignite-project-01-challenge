@@ -11,7 +11,7 @@ export const routes = [
     handler: (req, res) => {
       if (!req.body) {
         res.setHeader('Content-Type', 'application/json');
-        return res.writeHead(404).end(
+        return res.writeHead(400).end(
           JSON.stringify({
             error: 'body must be a valid JSON',
           })
@@ -22,9 +22,9 @@ export const routes = [
 
       if (!title || !description) {
         res.setHeader('Content-Type', 'application/json');
-        return res.writeHead(404).end(
+        return res.writeHead(400).end(
           JSON.stringify({
-            error: 'title e description must exist',
+            error: 'title and description must exist',
           })
         );
       }
@@ -37,7 +37,7 @@ export const routes = [
         description,
         completed_at: null,
         created_at: dateNow,
-        updated_at: null,
+        updated_at: dateNow,
       };
 
       database.insert('tasks', task);
@@ -62,7 +62,7 @@ export const routes = [
 
       if (!req.body) {
         res.setHeader('Content-Type', 'application/json');
-        return res.writeHead(404).end(
+        return res.writeHead(400).end(
           JSON.stringify({
             error: 'body must be a valid JSON',
           })
@@ -73,9 +73,9 @@ export const routes = [
 
       if (!title || !description) {
         res.setHeader('Content-Type', 'application/json');
-        return res.writeHead(404).end(
+        return res.writeHead(400).end(
           JSON.stringify({
-            error: 'title e description must exist',
+            error: 'title and description must exist',
           })
         );
       }
@@ -139,6 +139,17 @@ export const routes = [
 
       if (rowIndex > -1) {
         let taskToUpdate = tasks[rowIndex];
+
+        const isTaskCompleted = !!taskToUpdate.completed_at;
+
+        if (isTaskCompleted) {
+          res.setHeader('Content-Type', 'application/json');
+          return res.writeHead(400).end(
+            JSON.stringify({
+              error: 'task already completed',
+            })
+          );
+        }
 
         const dateNow = Date.now();
 
